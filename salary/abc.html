@@ -1,0 +1,17 @@
+人名
+						<select name="some">
+							<?php
+								$someArr = array(1=>'一', 2=>'二', 3=>'三'); //定义下拉表单元素数组
+								$num = 0;
+								foreach($someArr as $value => $showstr) {
+									if ($num % 2 == 0){
+										echo "<option value=\"$value\">$showstr</option>";
+									}
+									else{
+										echo "<option value=\"$value\" style=\"background:#e8eaeb;\">$showstr</option>";
+									}
+									$num++;
+								}
+							?>
+						</select>
+				<br>

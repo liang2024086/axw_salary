@@ -1,0 +1,64 @@
+@charset "utf-8";
+.body-login{background:url(login-bj.jpg) #61c3dd center no-repeat; height:500px;}
+.body-regist{background:url(regist-bj.jpg) #61c3dd center no-repeat; height:600px;}
+.cloud-pic{overflow:hidden;height:85px;width:100%; position:fixed; bottom:0;} 
+
+/*sprite*/
+.m-login .tab li,.m-login .resultBox .icon{background:url(login_sprite.png) no-repeat;}
+/*m-from*/
+.m-from{}
+.m-from .item:after{content:".";display:block;height:0;clear:both;visibility:hidden;line-height:0;font-size:0;}
+.m-from .item{positon:relative;margin:20px 0 0;*zoom:1;}
+.m-from .m-ipt-txt{float:left;}
+.m-from .form-tips{float:left;margin:8px 0 0 10px;color:#979797;}
+.m-from .form-tips-error{color:#ec4040;}
+.m-from .form-tips-ok{padding:0 0 0 24px;height:22px;color:#00bb9c;background:url(icon_sprite.png) no-repeat -10px -144px;}
+.m-from .form-tips-loading{padding:0 0 0 24px;height:22px;background:url(icon_loading.png) no-repeat;}
+.m-from .yzm{float:left;margin:0 0 0 10px;}
+.m-from .item-submit .btn_blueA{float:left;}
+.m-from .m-radio{margin-right:20px;}
+.m-from .item-custips{margin:0 0 -16px;}
+.m-from .item-custips .form-tips{margin-left:0;}
+.m-from .m-ckbox{margin-right:65px;vertical-align: top;}
+/*m-login*/
+.m-login{
+	margin:100px auto 0;width:838px;height:438px;background-color:#FBFBFB;overflow:hidden;
+	-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px; border-bottom:4px #7ec3d5 solid;
+}
+.m-login .formArea{float:right;width:606px;background-color: #fbfbfb;}
+.m-login .logoArea{float:left;width:232px;height:100%;background-color:#F6F6F6;}
+.m-login .logoArea .logo{margin:162px 0 12px;display:block;height:91px;overflow:hidden;text-indent:-9999px;background: url(login_logo.png) no-repeat center top;}
+.m-login .logoArea .desc{margin:0 0 0 24px;color:#979797;line-height: 28px;}
+.m-login .tab:after{content:".";display:block;height:0;clear:both;visibility:hidden;line-height:0;font-size:0;}
+.m-login .tab{*zoom:1; margin:10px 0 0 30px;}
+.m-login .tab li{float:left;width:270px;height:53px;line-height:46px; margin-right:10px; font-size:15px;text-align:center;cursor:pointer;background-repeat:repeat-x;}
+.m-login .tab li.current{color:#ffffff;background-position: 0 -56px;}
+.m-login .m-from{margin:6px 0 0 30px;}
+.m-login .resultBox{margin:162px 60px 0 80px;color:#979797;line-height:30px;overflow:hidden;}
+.m-login .resultBox .icon{float:left;margin-right:18px;width:44px;height:44px;background-position: -156px -112px;}
+.m-login .resultBox p{overflow:hidden;*zoom:1;}
+.is-login{margin-top:190px;width:574px;height:278px;}
+.is-login .formArea{width:342px;}
+.is-login .logoArea .logo{margin-top:80px;}
+.is-login .m-from{margin-left:30px;}
+.is-login .m-from .item{margin-top:20px;}
+.is-login .m-from .item-custips{margin:8px 0 -12px;}
+/*verifyBox*/
+.verifyBox{margin:130px 0 0 360px;overflow:hidden;}
+.verifyBox .retArea{margin-bottom:25px;line-height:30px;}
+.verifyBox .retArea-ok{padding:0 0 0 20px;color:#00bb9c;background:url(icon_sprite.png) no-repeat -10px -139px;}
+.verifyBox .retArea-fail{padding:0 0 0 20px;background:url(icon_sprite.png) no-repeat -10px -175px;}
+.verifyBox .btnArea{margin:0 0 0 20px;}
+.verifyBox-style-2{margin-top:100px;margin-left:275px;}
+.verifyBox .m-form-b{margin-left:20px;}
+.verifyBox-style-3{margin-top:100px;margin-left:210px;}
+.verifyBox-style-4{margin-top:100px;margin-left:200px;}
+
+/*登录-弹出框*/
+.log-all-title{background:url(lo-title.png) no-repeat; width:91px; height:42px; line-height:32px; position:absolute; left:-9px; top:15px; color:#fff; font-size:18px; padding-left:40px;}
+.log-all-box{margin:0 auto; width:272px;}
+.width225{width:225px;}
+
+
+
+

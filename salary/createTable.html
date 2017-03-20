@@ -1,0 +1,35 @@
+create table salary
+(
+	stuId char(20), 
+	date datetime not null,
+	hours float(5,1) not null,
+	onDuty char(20) not null,
+	duty char(10) not null,
+	recorder char(20) not null,
+	primary key(stuId,date,when)
+)
+
+ALTER TABLE salary ADD CONSTRAINT c_fk FOREIGN KEY(stuId)
+                             REFERENCES member(stuId);
+
+create table member
+(
+	name char(32) not null,
+	pwd char(30) not null,
+	gender char(2) CHECK(gender='男' or gender='女'),
+	team char(16) not null,
+	duty char(32) not null,
+	stuId char(20) not null PRIMARY KEY,
+	school char(100),
+	phone char(11),
+	mail char(50),
+	authority char(5) not null,
+	wetherIn char(1) not null
+)
+
+insert into member (name,pwd,gender,team,duty,stuId,school,phone,mail,authority,wetherIn) values('admin','000000','男','管理员','管理员','0000000000','','','','ttttt','1');
+
+update member set wetherIn = '1',name='sdf' where name = 'admin';
+delete from member where stuId = '5120309621';
+
+权限的位数需要增多，防止以后增加权限

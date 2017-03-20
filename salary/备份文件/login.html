@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+
+<?php
+/*
+	if (isset($_COOKIE['aixinwuSalaryUser'])){
+		$account = $_COOKIE['aixinwuSalaryUser'];
+		$passwd = $_COOKIE['aixinwuSalaryPwd'];
+		echo $account . "  ".$passwd;
+	}
+	else{
+		//获取表单内容
+		$account = $_POST['account'];
+		$passwd = $_POST['pwd'];
+		if ($account == ''){?>
+			<script type="text/javascript">
+				window.location.href="index.html";
+			</script>
+<?php
+		}
+		else{
+			setcookie('aixinwuSalaryUser',$account,time()-3600,'/');
+			setcookie('aixinwuSalaryPwd',$passwd,time()-3600,'/');
+		}		
+	}
+*/
+?>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title> 爱心屋工资</title>
+
+<link type="text/css" rel="stylesheet" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.datetimepicker.css"/>
+<link rel="stylesheet" type="text/css" href="css/table.css">
+
+<script src="js/jquery.js"></script>
+<script src="js/jquery.datetimepicker.js"></script>
+<script src="js/show.js"></script>
+<script type="text/javascript">
+
+	var SalaryArry = new Array();
+
+//************************************************************************	
+	function changeAuth(stuId,auth){
+
+		$.ajax({
+		type: 'POST', 
+		url : 'php/changeAuthority.php', 
+		data:	"stuId="+stuId+"&auth="+auth, 
+		success: function(data){ 
+			alert(data);
+		/*	var partn = /<script.*>.*<\/script>/;
+			if( data == 'empty' && 	partn.test(data) ){return;}
+
+			eval_r("data="+data);*/
+		//	document.getElementById("authorityShow").innerHTML=data;
+			}
+		}
+		);
+	}
+
+	function addSal(salarys){
+		$.ajax({
+		type: 'POST', 
+		url : 'php/addSalary.php', 
+		data:	"salarys="+salarys, 
+		success: function(data){ 
+			var strs = new Array();
+			alert(data+"未添加");
+			strs = data.split(",");
+				/*for (var j = 0; j < strs.length-1; j++){
+						alert(strs[j]);
+				}*/
+			
+			document.getElementById("salaryAdd").innerHTML=data;
+			for (var i = 0; i < SalaryArry.length;){
+				var tmp = SalaryArry[i].substring(5,SalaryArry[i].length);
+				if (strs.indexOf(tmp) == -1){
+					//alert(tmp);
+					deltr(tmp);
+				}
+				else i++;				
+			}
+			}
+		}
+		);
+	}
+
+	function exportSalary(date1,date2,type){
+		$.ajax({
+		type: 'POST', 
+		url : 'php/exportSalary.php', 
+		data:	"date1="+date1+"&date2="+date2+"&type="+type, 
+		success: function(data){ 
+			alert(data);
+			document.getElementById("exportResult").innerHTML=data;
+			}
+		}
+		);
+	}
+//************************************************************************
+
+	
+	//删除其中一行
+	function deltr(trid)
+	{    //alert(trid);
+	    var tab=document.getElementById("salaryTable"); 
+	    var row=document.getElementById(trid);   
+	    var index=row.rowIndex;//rowIndex属性为tr的索引值，从0开始  
+	    tab.deleteRow(index);  //从table中删除
+
+	    var inputDel = document.getElementById("input"+trid);
+	    if (inputDel != null){
+	    	inputDel.remove();
+	    }
+
+	    SalaryArry.splice(SalaryArry.indexOf("input"+trid),1);
+	}
+	
+	function addRow(addPerson){
+		var date = document.getElementById('datetimepicker').value;
+		var work = document.getElementById('whichWork').value;
+		var time = document.getElementById('times').value;
+		var name = document.getElementById('peopleName').value;
+		var salaryType = document.getElementById('salaryType').value;
+
+		if (date == "" || work == "" || time == "" || name == "" || salaryType == ""){
+			alert("请将信息填写完整。");
+		}
+		else if (document.getElementById(name)) {
+			alert("同一人一次只能有一条记录。");
+		}
+		else{
+			var Table = document.getElementById("salaryTable");   //取得自定义的表对象
+			var length = Table.rows.length; //获取行数
+		    var NewRow = Table.insertRow();                        //添加行
+		    var NewCell1= NewRow.insertCell();                     //添加列
+		    var NewCell2=NewRow.insertCell();
+		    var NewCell3=NewRow.insertCell();
+		    var NewCell4=NewRow.insertCell();
+		    var NewCell5=NewRow.insertCell();
+		    var NewCell6=NewRow.insertCell();
+		    NewRow.id = name;
+		    NewCell1.innerHTML = name;          //添加数据
+		    NewCell2.innerHTML=date; 
+		    NewCell3.innerHTML=work;
+		    NewCell4.innerHTML=time;
+		    NewCell5.innerHTML=salaryType;
+		    NewCell6.innerHTML="<button onclick=\"deltr('" + name + "')\">删除</button>";
+
+		    //rowNum = rowNum + 1;
+		    
+		    //alert(length);
+		    //alert(date+" " +work+" " + time + " " + name + " " +salaryType);
+
+		    var formSubmit = document.getElementById("submitSalary");
+		    var newInput = document.createElement("input");
+		    newInput.type = "hidden";
+		    newInput.name = "input"+name;
+		    newInput.id = "input"+name;
+		    newInput.value = name+","+date+","+work+","+time+","+salaryType+","+addPerson;
+		    formSubmit.appendChild(newInput);
+		    SalaryArry.push(newInput.name);
+		    //alert(newInput.value);
+		}	
+	}
+
+	function subSal(){
+		var salarys = "";
+
+		if (SalaryArry.length == 0)
+			alert("未添加任何人！");
+		else{
+			for (var i = 0; i < SalaryArry.length; i++){
+				salarys = salarys + document.getElementById(SalaryArry[i]).value+";";
+			}
+			//alert(salarys);
+			addSal(salarys);
+		}
+	}
+
+	function chagePWD(pwd){
+		var orgiPwd = document.getElementById("orgiPwd").value;
+		var changePwd = document.getElementById("changePwd").value;
+		var confirmPwd = document.getElementById("confirmPwd").value;
+
+		if (orgiPwd == '' || changePwd == '' || confirmPwd == ''){
+			alert("未输入完整");
+		}
+		else if (changePwd != confirmPwd){
+			alert("两次输入的密码不同");
+		}
+		else if(orgiPwd != pwd){
+			alert("原密码错误");
+		}
+		else if(changePwd.length < 6 || changePwd.length > 30){
+			alert("密码位数需在6到30位之间");
+		}
+		else{
+			document.getElementById("pwdChange").submit();
+		}
+	}
+
+	function changeAuthority(){
+		var auth = '';
+		var checkbox1 = document.getElementById("authority1");
+		var checkbox2 = document.getElementById("authority2");
+		var checkbox3 = document.getElementById("authority3");
+		var checkbox4 = document.getElementById("authority4");
+		var checkbox5 = document.getElementById("authority5");
+
+		if (checkbox1.checked == true)
+			auth += 't';
+		else auth += 'f';
+
+		if (checkbox2.checked == true)
+			auth += 't';
+		else auth += 'f';
+
+		if (checkbox3.checked == true)
+			auth += 't';
+		else auth += 'f';
+
+		if (checkbox4.checked == true)
+			auth += 't';
+		else auth += 'f';
+
+		if (checkbox5.checked == true)
+			auth += 't';
+		else auth += 'f';
+
+		//alert(auth);
+
+		var inputValue = document.getElementById("studentName").value;
+		if (inputValue == "")
+			alert("请选择学号");
+		else{
+			//alert(inputValue);
+			changeAuth(inputValue,auth);
+		}
+		
+	}
+
+	function expSal(){
+		var date1 = document.getElementById('date1').value;
+		var date2 = document.getElementById('date2').value;
+		var type = document.getElementById('exportType').value;
+		if (date1 == '' || date2 == '')
+			alert("请选择日期");
+		else if(date1 > date2)
+			alert("前面的日期应早于后面的日期");
+		else
+			exportSalary(date1,date2,type);
+	}
+
+</script>
+</head>
+
+<body>
+	<!-- 连接数据库 -->
+	<?php
+	//第四个位置填所选数据库名字
+	$mysqli = new mysqli('localhost','root','liang','aixinwuSalary');
+	if(mysqli_connect_errno())
+	{
+	    echo mysqli_connect_error();
+	}
+	$mysqli = mysqli_init();
+	$mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);//设置超时时间
+	$mysqli->real_connect('127.0.0.1', 'root', 'liang', 'aixinwuSalary'); 
+	
+	//获取表单内容
+		$account = $_POST['account'];
+		$passwd = $_POST['pwd'];
+
+	?>
+
+	<div id="main_body">
+		<?php
+			
+			$sql = 'select wetherIn,authority,name from member where stuId=\''.$account.'\' && pwd = \''.$passwd.'\';';
+			if ($result = $mysqli->query($sql))
+			{
+				/* fetch object array */
+			    $row = $result->fetch_row();
+			    if ($row == null){
+			    	//setcookie('aixinwuSalaryUser',$account,time()-3600,'/');
+					//setcookie('aixinwuSalaryPwd',$passwd,time()-3600,'/');
+			    	?>
+			    	<script>
+						alert("学号或密码错误，请重新输入。");
+						window.location.href="index.html";
+					</script>
+			    <?php			        
+			    }
+			    else {
+			    	if ($row[0] == '1'){
+			    		$myAuthrity = $row[1];
+			    		$name = $row[2];
+			    	}
+			    	else{
+			    		//setcookie('aixinwuSalaryUser',$account,time()-3600,'/');
+						//setcookie('aixinwuSalaryPwd',$passwd,time()-3600,'/');
+			    		?>
+				    	<script>
+							alert("学号或密码错误，请重新输入。");
+							window.location.href="index.html";
+						</script>
+			    	<?php	
+			    	}
+			    }
+			    
+			    /* free result set */
+			    $result->close();
+					
+			}
+		//	echo $myAuthrity;
+		?>
+
+	<div style="top:0px;left:0px;position:relative;">
+		<?php echo $name ?>
+		<input type="button" value="退出" onclick="window.location.href='exit.php';" >
+	</div>
+<br>
+	<?php
+		if ($myAuthrity[0] =='t'){?>
+			<div id="blocks" style="background-color:#ff0;" onclick="show_salary()">
+				工资记录
+			</div>
+
+			<div id="blocks" style="background-color:#ee0;" onclick="show_mail()">
+				查看通讯录
+			</div>
+
+			<div id="blocks" style="background-color:#2d4;" onclick="show_pwd()">
+				更改密码
+			</div>
+	<?php	}?>
+		
+	<?php
+		if ($myAuthrity[1] == 't'){?>
+			<div id="blocks" style="background-color:#ff3;" onclick="show_import()">
+				导入通讯录
+			</div>
+	<?php	}?>
+
+	<?php
+		if ($myAuthrity[2] == 't'){?>
+			<div id="blocks" style="background-color:#f00;" onclick="show_add()">
+				添加工资
+			</div>
+	<?php	}?>
+
+	<?php
+		if ($myAuthrity[3] == 't'){?>
+			<div id="blocks" style="background-color:#0ef;" onclick="show_export()">
+				导出工资
+			</div>
+	<?php	}?>
+
+	<?php
+		if ($myAuthrity[4] == 't'){?>
+			<div id="blocks" style="background-color:#2f4;" onclick="show_change()">
+				更改权限
+			</div>
+	<?php	}?>		
+
+		<br>
+		<p id="show" style="top:200px; position:relative;"><span id="showtime">
+
+			<!-- 工资记录 -->
+			<div id="salaryRecord" style="display:none;">
+				<table id="salaryRecord" name="salaryRecord" cellspacing="0" >
+					    <tr><th>日期</th><th>班次</th><th>时长</th><th>工资类型</th></tr>
+					    <?php
+					    	$sql = "select DATE_FORMAT(date,'%Y-%m-%d'),onDuty,hours,duty from salary where stuId='".$account."' order by date desc;";
+					    	if ($result = $mysqli->query($sql)){
+					    		while ($row = $result->fetch_row()) {
+					    			echo "<tr><td>".$row[0]."</td><td>".$row[1]."</td><td>".$row[2]."</td><td>".$row[3]."</td></tr>";
+					    		}
+					    	}
+					    ?>
+
+				</table>
+			</div>
+			
+			<!-- 添加工资 -->
+			<div id="addSalary" style="display:none;">
+						
+				<div id="inputBlock">
+					日期:
+						<input type="text" value="" id="datetimepicker"/>
+				</div>
+
+				<div id="inputBlock">
+					班次:
+							
+					<select style="margin:-2;" id="whichWork"> 
+					<option value="10:00 - 12:00" style="background:#e8eaeb;">10:00 - 12:00</option> 
+					<option value="12:00 - 14:00">12:00 - 14:00</option> 
+					<option value="14:00 - 16:00" style="background:#e8eaeb;">14:00 - 16:00</option> 
+					<option value="16:00 - 18:00">16:00 - 18:00</option> 
+					<option value="18:00 - 20:00" style="background:#e8eaeb;">18:00 - 20:00</option> 
+					</select> 
+				</div>
+
+				<div id="inputBlock">
+					时长:
+
+					<input type="text" value="" style="width:25px;" id = "times" /> h
+				</div>
+
+				<div id="inputBlock">
+					学号:
+					<input list="pasta" id="peopleName">
+						<datalist id="pasta">
+						<?php
+							$sql = "select name,stuId from member where name != 'admin' && wetherIn='1';";
+	echo $sql."<br>";
+							if ($result = $mysqli->query($sql)){
+								$tmp = 0;
+								while ($row = $result->fetch_row()){
+									echo "<option value=\"".$row[1]."\">".$row[0]."</option>"; 
+								}
+							}
+						?>
+						</datalist>
+				</div>
+
+				<div id="inputBlock">
+					工资类型:
+							
+					<select style="margin:-2;" id="salaryType"> 
+					<option value="值班经理" style="background:#e8eaeb;">值班经理</option> 
+					<option value="值班部员">值班部员</option> 
+					<option value="小组活动" style="background:#e8eaeb;">小组活动</option> 
+					</select> 
+				</div>
+
+				<div id="inputBlock">
+				<?php
+					echo "<button onclick=\"addRow('".$account."');\"> 添加</button>";
+				?>
+				</div>
+<br>
+<br>
+<br>
+
+				<!-- 添加的工资信息  -->
+				<table id="salaryTable" name="salaryTable" cellspacing="0" >
+					    <tr><th>学号</th><th>日期</th><th>班次</th><th>时长</th><th>工资类型</th><th></th></tr>
+
+				</table>
+
+				<br>
+				<form method="post" action="php/addSalary.php" id="submitSalary" name="submitSalary"> 
+				</form>
+				<button onclick="subSal();"> 提交</button>
+				<br>
+				<div id="salaryAdd">
+					结果
+				</div>
+			</div>
+
+			<!-- 导出工资 -->
+			<div id="exportSalary" style="display:none;">
+				<div style="top:20px;left:20px;position:relative;">
+					<h3>导出工资</h3>
+					<div id="inputBlock">
+						日期范围：&nbsp
+						<input type="text" value="" id="date1"/>&nbsp
+						到&nbsp
+						<input type="text" value="" id="date2"/>
+					</div>
+
+					<div id="inputBlock">
+						工资类型：&nbsp
+						<select style="margin:-2;" id="exportType"> 
+						<option value="全部">全部</option> 
+						<option value="值班经理" style="background:#e8eaeb;">值班经理</option> 
+						<option value="值班部员">值班部员</option> 
+						<option value="小组活动" style="background:#e8eaeb;">小组活动</option> 
+						</select> 
+					</div>
+
+					<div id="inputBlock">
+						<button onclick="expSal();" style="top:-2px;left:20px;position:relative;">导出</button>
+					</div>
+				</div>
+				<br><br><br><br><br><br><br>
+				<div id="exportResult" style="top:0px;left:0px;position:relative;">
+						
+					</div>
+			</div>
+
+			<!-- 查看通讯录 -->
+			<div id="mailList" style="display:none;">
+				<div id="excel" style="width:960px;">
+					<?php
+									$sql = "select name,gender,team,duty,stuId,school,phone,mail from member where name != 'admin' && wetherIn ='1'";
+					?>
+									<table cellspacing="0">
+					    <tr><th>姓名</th><th>性别</th><th>团队</th><th>职务</th><th>学号</th><th>学院</th><th>联系方式</th><th>邮箱</th></tr>
+
+					<?php
+						if ($result = $mysqli->query($sql)){
+							while ($row = $result->fetch_row()){
+					?>
+
+
+					    <tr><td><?php echo $row[0]?></td><td><?php echo $row[1]?></td><td><?php echo $row[2]?></td><td><?php echo $row[3]?></td><td><?php echo $row[4]?></td><td><?php echo $row[5]?></td><td><?php echo $row[6]?></td><td><?php echo $row[7]?></td></tr>
+					   
+
+
+					<?php		}
+						}
+					?>
+					 </table>
+				</div>
+			</div>
+
+			<!-- 导入通讯录 -->
+			<div id="importMail" style="display:none;">
+				<form method="post" action="php/importExcel.php" enctype="multipart/form-data">
+				<div style="width:500px;left:30px;top:20px;position:relative;">
+					<h3>导入通讯录</h3>
+					<label for="file">Filename:</label>
+					<input type="file" name="file" id="file"/>
+					<input type="submit" value="导入" />
+				</div>
+				</form>
+			</div>
+
+			<!-- 更改权限 -->
+			<div id="authority" style="display:none;">
+				<div style="top:20px;left:20px;position:relative;width:430px;">
+					<table >			
+						<h3>更改权限</h3>
+						<tr><td style="width:30px;"><h4>学号:</h4></td>
+						<td>
+						
+						<input list="studentId" id="studentName">
+							<datalist id="studentId">
+							<?php
+								$sql = "select name,stuId from member where name != 'admin' && wetherIn='1';";
+		echo $sql."<br>";
+								if ($result1 = $mysqli->query($sql)){
+									$tmp1 = 0;
+									while ($row1 = $result1->fetch_row()){
+										echo "<option value=\"".$row1[1]."\">".$row1[0]."</option>"; 
+									}
+								}
+							?>
+							</datalist></td>
+							</tr>
+							<tr>
+								<td><h4>权限:</h4></td>
+								<td>
+									<label for="authority1">查看工资、通讯录以及更改密码</label>
+									<input type="checkbox" name="authority1" id="authority1" value="1" style="top:3px;position:relative;" /> 
+									<label for="authority2">导入通讯录</label>
+									<input type="checkbox" name="authority2" id="authority2" value="2" style="top:3px;position:relative;" /> 
+									<label for="authority3">添加工资</label>
+									<input type="checkbox" name="authority3" id="authority3" value="3" style="top:3px;position:relative;" /> 
+									<label for="authority4">导出工资</label>
+									<input type="checkbox" name="authority4" id="authority4" value="4" style="top:3px;position:relative;" /> 
+									<label for="authority5">更改权限</label>
+									<input type="checkbox" name="authority5" id="authority5" value="5" style="top:3px;position:relative;"/> 
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<button onclick="changeAuthority();">确认提交</button>
+								</td>
+							</tr>	
+											
+					</table>
+
+					<div id="authorityShow" name="authorityShow" style="position:relative;top:20px;">
+					
+					</div>
+				</div>
+			</div>
+
+			<!-- 更改密码 -->
+			<div id="pwd" style="display:none;">
+					<div style="width:500px;left:30px;position:relative;">
+						<br><br>
+						<h3>更改密码</h3>
+						<table cellspacing="0">
+					<form method="post" action="php/changePWD.php" id="pwdChange" name="pwdChange">
+						<?php 
+							echo "<input type='hidden' value='".$account."' id='changeID' name='changeID'>";
+						?>
+							<tr>
+								<td>
+									<label for="orgiPwd">原密码:</label>
+								</td>
+								<td>
+									<input type="password" name="orgiPwd" id="orgiPwd"/>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<label for="changePwd">更改后密码:</label>
+								</td>
+								<td>
+									<input type="password" name="changePwd" id="changePwd"/>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<label for="confirmPwd">确认密码:</label>
+								</td>
+								<td>
+									<input type="password" name="confirmPwd" id="confirmPwd"/>
+								</td>
+							</tr>	
+
+					</form>
+							<tr>
+								<td>
+									
+								</td>
+								<td>
+									<?php
+										echo "<button onclick='chagePWD(".$passwd.");'> 确认修改 </button>";
+									?>									
+								</td>
+							</tr>		
+						</table>
+					</div>
+
+			</div>
+
+		</span></p>  
+
+	</div>
+<br>
+
+</body>
+
+
+
+
+
+<script type="text/javascript">
+
+$('#datetimepicker').datetimepicker({
+		yearOffset:0,
+		lang:'ch',
+		timepicker:false,
+		format:'Y-m-d',
+		formatDate:'Y-m-d',
+		maxDate:'+1970/01/01' // and today is maximum date calendar
+	});
+
+$('#date1').datetimepicker({
+		yearOffset:0,
+		lang:'ch',
+		timepicker:false,
+		format:'Y-m-d',
+		formatDate:'Y-m-d',
+		maxDate:'+1970/01/01' // and today is maximum date calendar
+	});
+
+$('#date2').datetimepicker({
+		yearOffset:0,
+		lang:'ch',
+		timepicker:false,
+		format:'Y-m-d',
+		formatDate:'Y-m-d',
+		maxDate:'+1970/01/01' // and today is maximum date calendar
+	});
+
+</script>
+
+
+</html>
